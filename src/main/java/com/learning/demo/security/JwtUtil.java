@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class JwtUtil {
 
-    protected String SECRET_KEY = "2908497a77c136d302bb7db1086f5da516bc5d1e6d3daf1c16027e77cd6985f5";
+    protected String SECRET_KEY = "";
     private int expirationTime = 1000 * 60 * 24;
 
     public String generateToken(UserDetails userDetails){
