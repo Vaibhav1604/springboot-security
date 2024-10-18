@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 //@Data
-@Builder
+//@Builder
 @Entity
 @Table(name = "incidents_table")
 public class Incident {
@@ -16,7 +16,7 @@ public class Incident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer incId;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String incNumber;
 
     @ManyToOne
