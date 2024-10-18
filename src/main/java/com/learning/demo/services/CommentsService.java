@@ -54,7 +54,7 @@ public class CommentsService {
 
         if(!(comment == null)) {
             commentsRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Delete the element");
+            return ResponseEntity.status(HttpStatus.OK).body("Deleted the element");
         }
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("not found this element");
