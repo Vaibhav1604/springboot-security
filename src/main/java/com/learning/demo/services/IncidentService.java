@@ -2,6 +2,7 @@ package com.learning.demo.services;
 
 import com.learning.demo.entities.Incident;
 import com.learning.demo.repositories.IncidentRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
