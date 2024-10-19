@@ -25,7 +25,7 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ADMIN)
+//                .role(Role.ADMIN)
                 .build();
         userRepository.save(user);
         var jwt = jwtUtil.generateToken(user);
@@ -39,7 +39,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByUsername(request.getUsername())
+        var user  = userRepository.findByUsername(request.getUsername())
                 .orElseThrow();
         var jwt = jwtUtil.generateToken(user);
         return ResponseEntity.ok(AuthenticationResponse.builder().jwt(jwt).build());
