@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/incident")
+@RequestMapping("/user/incident")
 public class IncidentController {
 
     @Autowired
     private IncidentService incidentService;
 
     @GetMapping("/all")
-    public List<Incident> getAllIncidents(){
+    public ResponseEntity<List<Incident>> getAllIncidents(){
         return incidentService.getAllIncidents();
     }
 

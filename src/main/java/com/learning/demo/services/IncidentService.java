@@ -20,10 +20,10 @@ public class IncidentService {
     @Autowired
     private IncidentRepository incidentRepository;
 
-    public List<Incident> getAllIncidents(){
+    public ResponseEntity<List<Incident>> getAllIncidents(){
         List<Incident> incidents = new ArrayList<>();
         incidentRepository.findAll().forEach(incidents::add);
-        return incidents;
+        return ResponseEntity.ok(incidents);
     }
 
     public ResponseEntity<Incident> getOneIncident(String incNumber) {
