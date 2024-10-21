@@ -1,5 +1,6 @@
 package com.learning.demo.config;
 
+import com.learning.demo.entities.User;
 import com.learning.demo.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,16 +15,34 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
+//    @Bean
+//    public UserDetailsService userDetailsService(){
+//        return username -> userRepository.findByUsername(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("username not found"));
+//    }
+
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("username not found"));
+        return username -> {
+            Optional<User> tentativeUser = userRepository.findByUsername(username);
+            User user = tentativeUser.get();
+            if(!tentativeUser.isPresent()){
+                throw new UsernameNotFoundException("could not find user: " + username);
+            }
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .roles(user.getRoles().toArray(new String[0]))
+                    .build();
+        };
     }
 
     @Bean

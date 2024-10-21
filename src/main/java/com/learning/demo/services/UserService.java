@@ -14,13 +14,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getUsers(){
-        List<User> users = new ArrayList<>();
-        userRepository.findAll().forEach(users::add);
-        return users;
-    }
+//    public List<User> getUsers(){
+//        List<User> users = new ArrayList<>();
+//        userRepository.findAll().forEach(users::add);
+//        return users;
+//    }
 
-    public void addUser(User user) {
-        userRepository.save(user);
-    }
+    //update user details
+
+//    public void addUser(User user) {
+//        userRepository.save(user);
+//    }
 }

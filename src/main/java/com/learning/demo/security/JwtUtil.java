@@ -23,7 +23,9 @@ public class JwtUtil {
     private int expirationTime = 1000 * 60 * 24;
 
     public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities());
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> claims, UserDetails userDetails) {

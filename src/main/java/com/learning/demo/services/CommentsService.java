@@ -35,11 +35,11 @@ public class CommentsService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         comment.setUser(fetchedUser);
         String username = fetchedUser.getUsername();
-        Role userRole = fetchedUser.getRole();
+        List<String> userRole = fetchedUser.getRoles();
 
 //	    System.out.println("Username: " + username);
 //	    System.out.println("User Role: " + userRole);
-        if (userRole != Role.ADMIN) {
+        if (userRole.get(0) != "ADMIN") {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed to add comment.");
         } else {
             commentsRepository.save(comment);
@@ -54,7 +54,7 @@ public class CommentsService {
 
         if(!(comment == null)) {
             commentsRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Delete the element");
+            return ResponseEntity.status(HttpStatus.OK).body("Deleted the element");
         }
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("not found this element");
@@ -71,7 +71,7 @@ public class CommentsService {
         Comments toBeUpdatedComment = optionalComment.get();
         User user = comment.getUser(); // Assuming there's a User entity
         String username = (user != null) ? user.getUsername() : null;
-        Role userRole = (user != null) ? user.getRole() : null;
+        List<String> userRole = (user != null) ? user.getRoles() : null;
 
         System.out.println(user.toString());
 
@@ -85,7 +85,7 @@ public class CommentsService {
 
         Role desiredRole = Role.ADMIN;
 
-        if (userRole.equals(desiredRole)) {
+        if (userRole.get(0).equals(desiredRole)) {
             System.out.println("Checking whether they're equal: " + userRole.equals(desiredRole));
 
             System.out.println("Username before saving in table: " + username);
