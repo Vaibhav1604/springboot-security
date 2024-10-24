@@ -18,7 +18,7 @@ public class Comments {
     private Incident incident;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name ="user_id", nullable = false)
     private User user;
 
     @Column(nullable = false, length = 500)
@@ -40,17 +40,17 @@ public class Comments {
         this.commentID = commentID;
     }
 
-    public Incident getIncident() {
-        return incident;
-    }
+//    public Incident getIncident() {
+//        return incident;
+//    }
 
     public void setIncident(Incident incident) {
         this.incident = incident;
     }
 
-    public User getUser() {
-        return user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
 
     public void setUser(User user) {
         this.user = user;

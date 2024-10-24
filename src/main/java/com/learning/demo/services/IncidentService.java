@@ -1,11 +1,16 @@
 package com.learning.demo.services;
 
 import com.learning.demo.entities.Incident;
+import com.learning.demo.entities.Status;
+import com.learning.demo.entities.User;
 import com.learning.demo.repositories.IncidentRepository;
+import com.learning.demo.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,22 +24,45 @@ public class IncidentService {
 
     @Autowired
     private IncidentRepository incidentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public ResponseEntity<List<Incident>> getAllIncidents(){
-        List<Incident> incidents = new ArrayList<>();
-        incidentRepository.findAll().forEach(incidents::add);
+        List<Incident> allIncidents = new ArrayList<>();
+        incidentRepository.findAll().forEach(allIncidents::add);
+        if(allIncidents.isEmpty()){
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(allIncidents);
+        }
+    }
+
+    public ResponseEntity<List<Incident>> getAllIncidentsForUser(int userId){
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
+        if(optionalUser.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        User user = optionalUser.get();
+        List<Incident> incidents = user.getIncidents();
         return ResponseEntity.ok(incidents);
     }
 
-    public ResponseEntity<Incident> getOneIncident(String incNumber) {
-        Optional<Incident> optionalIncident = incidentRepository.findByIncNumber(incNumber);
+    public ResponseEntity<Incident> getOneIncident(int incId) {
+        Optional<Incident> optionalIncident = incidentRepository.findById(incId);
         if(!optionalIncident.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok().body(optionalIncident.get());
     }
 
-    public ResponseEntity<String> addIncident(Incident incident) {
+    public ResponseEntity<String> addIncident(int userId, Incident incident) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        User user = optionalUser.get();
+        incident.setUser(user);
+        incident.setStatus(Status.CREATED);
         Incident tentativeIncident = incidentRepository.save(incident);
         try {
             if(tentativeIncident!=null) {
@@ -47,9 +75,9 @@ public class IncidentService {
         }
     }
 
-    public ResponseEntity<String> updateIncident(@PathVariable String incNumber, @RequestBody Incident incident) {
+    public ResponseEntity<String> updateIncident(@PathVariable int incId, @RequestBody Incident incident) {
 
-        Optional<Incident> optionalIncident = incidentRepository.findByIncNumber(incNumber);
+        Optional<Incident> optionalIncident = incidentRepository.findById(incId);
 
         if(!optionalIncident.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -77,13 +105,24 @@ public class IncidentService {
     }
 
     @Transactional
-    public ResponseEntity<String> deleteIncident(String incNumber){
-        Optional<Incident> optionalIncident = incidentRepository.findByIncNumber(incNumber);
+    public ResponseEntity<String> deleteIncident(int incId){
+        Optional<Incident> optionalIncident = incidentRepository.findById(incId);
         if(!optionalIncident.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("incident not found");
         }
-
-        incidentRepository.deleteByIncNumber(incNumber);
+        incidentRepository.deleteById(incId);
         return ResponseEntity.ok("incident successfully deleted");
+    }
+
+    @Transactional
+    public ResponseEntity<String> resolveIncident(int incId){
+        Optional<Incident> optionalIncident = incidentRepository.findById(incId);
+        if(optionalIncident.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Incident incident = optionalIncident.get();
+        incident.setStatus(Status.RESOLVED);
+        incidentRepository.save(incident);
+        return ResponseEntity.ok("incident resolved successfully");
     }
 }

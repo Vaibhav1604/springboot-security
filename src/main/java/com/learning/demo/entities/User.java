@@ -5,11 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -27,6 +31,13 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Incident> incidents;
 
+    public int getUserId() {
+        return userId;
+    }
+
+    @OneToMany(mappedBy = "user")
+    private List<Comments> comments;
+
     @Column(nullable = false)
     private String username;
 
@@ -36,14 +47,22 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-//    @Enumerated(EnumType.STRING)
-    private List<String> roles;
+//    private List<String> roles;
+    private String roles;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable=false)
+    private LocalDateTime createdAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .toList();
+//        return roles.stream()
+//                .map(SimpleGrantedAuthority::new)
+//                .toList();
+//        return Arrays.stream(roles.split(","))
+//                .map(SimpleGrantedAuthority::new)
+//                .toList();
+        return Collections.singletonList(new SimpleGrantedAuthority(roles));
     }
 
     @Override

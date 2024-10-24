@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 //@Data
 //@Builder
 @Entity
@@ -22,6 +24,12 @@ public class Incident {
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "incident")
+    private List<Comments> comments;
+
+    @OneToMany(mappedBy = "incident")
+    private List<Attachments> attachments;
 
     @Column(nullable = false)
     private String incSubject;
@@ -59,6 +67,14 @@ public class Incident {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Comments> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comments> comments) {
+        this.comments = comments;
     }
 
     public String getIncSubject() {

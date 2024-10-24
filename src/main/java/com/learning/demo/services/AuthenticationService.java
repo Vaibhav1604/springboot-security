@@ -29,7 +29,7 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Arrays.asList("USER"))
+                .roles("USER")
                 .build();
         userRepository.save(user);
         var jwt = jwtUtil.generateToken(user);
@@ -41,7 +41,7 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Arrays.asList("ADMIN"))
+                .roles("ADMIN")
                 .build();
         userRepository.save(user);
         var jwt = jwtUtil.generateToken(user);

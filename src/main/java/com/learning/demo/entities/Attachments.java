@@ -1,6 +1,7 @@
 package com.learning.demo.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -12,14 +13,19 @@ public class Attachments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer attachmentID;
 
-    @OneToOne
-    @JoinColumn(name = "incident_id", nullable = false)
+//    @OneToOne
+//    @JoinColumn(name = "incident_id", nullable = false)
+//    private Incident incident;
+
+    @ManyToOne
+    @JoinColumn(name="inc_id", nullable = false)
     private Incident incident;
 
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    @Column(name = "uploaded_at", nullable = false)
+    @CreationTimestamp
+    @Column(nullable = false, updatable=false)
     private LocalDateTime uploadedAt;
 
     public Attachments() {

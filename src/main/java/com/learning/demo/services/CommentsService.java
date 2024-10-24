@@ -1,16 +1,14 @@
 package com.learning.demo.services;
 
-import com.learning.demo.entities.Comments;
-import com.learning.demo.entities.Role;
-import com.learning.demo.entities.User;
+import com.learning.demo.entities.*;
 import com.learning.demo.repositories.CommentsRepository;
+import com.learning.demo.repositories.IncidentRepository;
 import com.learning.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,111 +21,69 @@ public class CommentsService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Comments> getAllComments() {
-        List<Comments> comm = new ArrayList<>();
-        commentsRepository.findAll().forEach(comm::add);
-        return comm;
+    @Autowired
+    private IncidentRepository incidentRepository;
+
+//    public ResponseEntity<List<Comments>> getAllComments() {
+//        List<Comments> comments = new ArrayList<>();
+//        commentsRepository.findAll().forEach(comments::add);
+//        if (comments.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        } else {
+//            return ResponseEntity.ok(comments);
+//        }
+//    }
+
+//    public ResponseEntity<List<Comments>> getCommentForUser(int userId){
+//        Optional<User> optionalUser = userRepository.findById(userId);
+//        if (optionalUser.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        User user = optionalUser.get();
+//        List<Comments> commentsList = user.getComments();
+//        return ResponseEntity.ok(commentsList);
+//    }
+
+    public ResponseEntity<String> addComments(int adminId, int incId, Comments comment) {
+        Optional<User> optionalUser = userRepository.findById(adminId);
+        Optional<Incident> optionalIncident = incidentRepository.findById(incId);
+        if(optionalUser.isEmpty() || optionalIncident.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user/incident not found");
+        }
+        User user = optionalUser.get();
+        Incident incident = optionalIncident.get();
+        comment.setUser(user);
+        comment.setIncident(incident);
+        incident.setStatus(Status.WIP);
+        Comments createdComment = commentsRepository.save(comment);
+        if(createdComment==null){
+            return ResponseEntity.badRequest().body("comment could not be added");
+        }
+        return ResponseEntity.ok("comment added");
     }
 
-    public ResponseEntity<String> addComments(Comments comment) {
-        User user1 = comment.getUser();
-        User fetchedUser = userRepository.findById(user1.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        comment.setUser(fetchedUser);
-        String username = fetchedUser.getUsername();
-        List<String> userRole = fetchedUser.getRoles();
-
-//	    System.out.println("Username: " + username);
-//	    System.out.println("User Role: " + userRole);
-        if (userRole.get(0) != "ADMIN") {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed to add comment.");
-        } else {
-            commentsRepository.save(comment);
-            return ResponseEntity.ok("Comment added successfully");
+    public ResponseEntity<String> updateComment(int incId, Comments comment) {
+//        Optional<User> optionalUser = userRepository.findById(adminId);
+        Optional<Incident> optionalIncident = incidentRepository.findById(incId);
+//        Optional<Comments> optionalComment = commentsRepository.findById(commentId);
+        if(optionalIncident.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user/incident/comment not found");
         }
-    }
+//        User user = optionalUser.get();
+        Incident incident = optionalIncident.get();
+//        Comments fetchedComment = optionalComment.get();
+//        comment.setUser(user);
+//        comment.setIncident(incident);
 
-
-    public ResponseEntity<String> removeComments(int id) {
-
-        Optional<Comments> comment = commentsRepository.findById(id);
-
-        if(!(comment == null)) {
-            commentsRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Deleted the element");
+        List<Comments> fetchedComment = incident.getComments();
+        fetchedComment.get(0).setCommentText(comment.getCommentText());
+        if(comment.getCommentText()!=null){
+//            fetchedComment.setCommentText(comment.getCommentText());
+            fetchedComment.get(0).setCommentText(comment.getCommentText());
         }
-        else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("not found this element");
-        }
-    }
-
-    public ResponseEntity<String> updateComment(int id, Comments comment) {
-        Optional<Comments> optionalComment = commentsRepository.findById(id);
-
-        if (!optionalComment.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not Found");
-        }
-
-        Comments toBeUpdatedComment = optionalComment.get();
-        User user = comment.getUser(); // Assuming there's a User entity
-        String username = (user != null) ? user.getUsername() : null;
-        List<String> userRole = (user != null) ? user.getRoles() : null;
-
-        System.out.println(user.toString());
-
-        if (username == null || userRole == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User or role not found in the request");
-        }
-
-//	    System.out.println("Fetching username: " + username);
-//	    System.out.println("Fetching user role: " + userRole);
-
-
-        Role desiredRole = Role.ADMIN;
-
-        if (userRole.get(0).equals(desiredRole)) {
-            System.out.println("Checking whether they're equal: " + userRole.equals(desiredRole));
-
-            System.out.println("Username before saving in table: " + username);
-            System.out.println("User role before saving in table: " + userRole);
-            System.out.println("Desired role before saving in table: " + desiredRole);
-
-            if (comment.getCommentText() != null) {
-                toBeUpdatedComment.setCommentText(comment.getCommentText());
-            }
-            if (comment.getIncident() != null) {
-                toBeUpdatedComment.setIncident(comment.getIncident());
-            }
-            if (user != null) {
-                toBeUpdatedComment.setUser(user);
-            }
-
-            try {
-                commentsRepository.save(toBeUpdatedComment);
-                System.out.println("Username after saving in table: " + username);
-                System.out.println("User role after saving in table: " + userRole);
-                return ResponseEntity.ok("Comment updated successfully");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error-- Try Again");
-            }
-        } else {
-            System.out.println("Username: " + username);
-            System.out.println("User Role: " + userRole);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Employees not allowed here");
-        }
+//        commentsRepository.save(fetchedComment);
+        incidentRepository.save(incident);
+        return ResponseEntity.ok("comment updated");
     }
 
 }
-
-
-
-//	public List<String> getAllComments() {
-//		List<Comments> comm = new ArrayList<>();
-//		commentsRepository.findAll().forEach(comm::add);
-//		List<String> lis1 = new ArrayList<>();
-//
-//		for(Comments c : comm) {
-//			lis1.add(c.getCommentText());
-//		}
-//		return lis1;
-//	}

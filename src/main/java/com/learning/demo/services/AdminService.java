@@ -2,6 +2,7 @@ package com.learning.demo.services;
 
 import com.learning.demo.entities.Incident;
 import com.learning.demo.entities.User;
+import com.learning.demo.repositories.IncidentRepository;
 import com.learning.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ public class AdminService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private IncidentRepository incidentRepository;
 
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> allUsers = new ArrayList<>();
@@ -62,18 +65,4 @@ public class AdminService {
             return false;
         }
     }
-
-//    public ResponseEntity<String> addAdminUser(User user){
-//        user.setRoles(Arrays.asList("ADMIN","USER"));
-//        User tentativeUser = userRepository.save(user);
-//        try {
-//            if(tentativeUser!=null) {
-//                return ResponseEntity.ok("admin user created successfully");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("admin could not be created");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("an error occurred: " + e.getMessage());
-//        }
-//    }
 }

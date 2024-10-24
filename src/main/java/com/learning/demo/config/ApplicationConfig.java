@@ -33,14 +33,14 @@ public class ApplicationConfig {
     public UserDetailsService userDetailsService(){
         return username -> {
             Optional<User> tentativeUser = userRepository.findByUsername(username);
-            User user = tentativeUser.get();
-            if(!tentativeUser.isPresent()){
+            if(tentativeUser.isEmpty()){
                 throw new UsernameNotFoundException("could not find user: " + username);
             }
+            User user = tentativeUser.get();
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .roles(user.getRoles().toArray(new String[0]))
+                    .roles(user.getRoles())
                     .build();
         };
     }
