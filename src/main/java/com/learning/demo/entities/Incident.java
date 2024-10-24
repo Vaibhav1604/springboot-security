@@ -25,10 +25,10 @@ public class Incident {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "incident")
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comments> comments;
 
-    @OneToMany(mappedBy = "incident")
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachments> attachments;
 
     @Column(nullable = false)
