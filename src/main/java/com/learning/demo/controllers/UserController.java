@@ -33,7 +33,7 @@ public class UserController {
 //        return incidentService.getOneIncident(id);
 //    }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<Incident>> getAllIncidentsForUser(@PathVariable int userId){
         return incidentService.getAllIncidentsForUser(userId);
     }

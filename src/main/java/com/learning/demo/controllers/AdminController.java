@@ -37,7 +37,7 @@ public class AdminController {
 //        return authenticationService.registerAdmin(user);
 //    }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<Incident>> getAllIncidents(){
         return incidentService.getAllIncidents();
     }
