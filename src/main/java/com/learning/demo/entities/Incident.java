@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 //@Data
@@ -39,6 +41,14 @@ public class Incident {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable=false)
+    private LocalDateTime createdAt;
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     @PostPersist
     public void generateUniqueIncNumbers(){
