@@ -55,7 +55,7 @@ public class IncidentService {
         return ResponseEntity.ok().body(optionalIncident.get());
     }
 
-    public ResponseEntity<String> addIncident(int userId, Incident incident) {
+    public ResponseEntity<Incident> addIncident(int userId, Incident incident) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if(optionalUser.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -66,12 +66,12 @@ public class IncidentService {
         Incident tentativeIncident = incidentRepository.save(incident);
         try {
             if(tentativeIncident!=null) {
-                return ResponseEntity.ok("incident created successfully");
+                return ResponseEntity.ok(incident);
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("incident could not be created");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(tentativeIncident);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("an error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(tentativeIncident);
         }
     }
 

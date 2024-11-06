@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/add-inc")
-    public ResponseEntity<String> addIncident(@PathVariable int userId, @RequestBody Incident incident) {
+    public ResponseEntity<Incident> addIncident(@PathVariable int userId, @RequestBody Incident incident) {
         return incidentService.addIncident(userId, incident);
     }
 
