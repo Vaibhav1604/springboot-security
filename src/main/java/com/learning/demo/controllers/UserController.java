@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping("add-inc/{incId}/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("File") MultipartFile file, @PathVariable int incId) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable int incId) {
         return attachmentsService.uploadFile(file,incId);
     }
 

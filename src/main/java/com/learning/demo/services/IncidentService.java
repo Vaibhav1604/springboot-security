@@ -66,7 +66,7 @@ public class IncidentService {
         Incident tentativeIncident = incidentRepository.save(incident);
         try {
             if(tentativeIncident!=null) {
-                return ResponseEntity.ok(incident);
+                return ResponseEntity.ok(tentativeIncident);
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(tentativeIncident);
             }
