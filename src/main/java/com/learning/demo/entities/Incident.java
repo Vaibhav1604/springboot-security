@@ -6,12 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-//@Data
-//@Builder
+// @Data
+// @Builder
 @Entity
 @Table(name = "incidents_table")
 public class Incident {
@@ -24,7 +25,7 @@ public class Incident {
     private String incNumber;
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,15 +44,15 @@ public class Incident {
     private Status status;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable=false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     @PostPersist
-    public void generateUniqueIncNumbers(){
+    public void generateUniqueIncNumbers() {
         this.incNumber = "INC" + String.format("%010d", this.incId);
     }
 
@@ -71,9 +72,9 @@ public class Incident {
         this.incNumber = incNumber;
     }
 
-//    public User getUser() {
-//        return user;
-//    }
+    public User getUser() {
+        return user;
+    }
 
     public void setUser(User user) {
         this.user = user;
@@ -109,5 +110,21 @@ public class Incident {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
